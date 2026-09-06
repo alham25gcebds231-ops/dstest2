@@ -2,79 +2,80 @@
 #include <stdlib.h>
 struct Node {
     int data;
+    struct Node* prev;
     struct Node* next;
 };
 void insertAtBeginning(struct Node** head, int data) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->data = data;
-    if (*head == NULL) {
-        *head = newNode;
-        newNode->next = *head;
-    } else {
-        struct Node* current = *head;
-        while (current->next != *head) {
-            current = current->next;
-        }
-        current->next = newNode;
-        newNode->next = *head;
-        *head = newNode;
+    newNode->prev = NULL;
+    newNode->next = *head;
+    if (*head != NULL) {
+        (*head)->prev = newNode;
     }
+    *head = newNode;
 }
-void deleteNode(struct Node** head, int key) {
+void insertAtEnd(struct Node** head, int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
     if (*head == NULL) {
-        printf("The circular list is empty.\n");
+        newNode->prev = NULL;
+        *head = newNode;
         return;
     }
     struct Node* current = *head;
-    struct Node* prev = NULL;
-    do {
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = newNode;
+    newNode->prev = current;
+}
+void deleteNode(struct Node** head, int key) {
+    if (*head == NULL) {
+        printf("The doubly linked list is empty.\n");
+        return;
+    }
+    struct Node* current = *head;
+    while (current != NULL) {
         if (current->data == key) {
-            if (current == *head) {
-                if (current->next == *head) {
-                    *head = NULL;
-                    free(current);
-                } else {
-                    struct Node* last = *head;
-                    while (last->next != *head) {
-                        last = last->next;
-                    }
-                    *head = current->next;
-                    last->next = *head;
-                    free(current);
-                }
+            if (current->prev != NULL) {
+                current->prev->next = current->next;
             } else {
-                prev->next = current->next;
-                free(current);
+                *head = current->next;
             }
-            printf("Node with data %d deleted from the circular list.\n", key);
+            if (current->next != NULL) {
+                current->next->prev = current->prev;
+            }
+            free(current);
+            printf("Node with data %d deleted from the doubly linked list.\n", key);
             return;
         }
-        prev = current;
         current = current->next;
-    } while (current != *head);
-
-    printf("Node with data %d not found in the circular list.\n", key);
+    }
+    printf("Node with data %d not found in the doubly linked list.\n", key);
 }
 void display(struct Node* head) {
     if (head == NULL) {
-        printf("The circular list is empty.\n");
+        printf("The doubly linked list is empty.\n");
         return;
     }
     struct Node* current = head;
-    do {
-        printf("%d -> ", current->data);
+    while (current != NULL) {
+        printf("%d <-> ", current->data);
         current = current->next;
-    } while (current != head);
-    printf("...\n");
+    }
+    printf("NULL\n");
 }
 int main() {
     struct Node* head = NULL;
     int choice, data, key;
     while (1) {
         printf("1. Insert at the beginning\n");
-        printf("2. Delete a node\n");
-        printf("3. Display\n");
-        printf("4. Quit\n");
+        printf("2. Insert at the end\n");
+        printf("3. Delete a node\n");
+        printf("4. Display\n");
+        printf("5. Quit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
         switch (choice) {
@@ -84,15 +85,20 @@ int main() {
                 insertAtBeginning(&head, data);
                 break;
             case 2:
+                printf("Enter data to insert at the end: ");
+                scanf("%d", &data);
+                insertAtEnd(&head, data);
+                break;
+            case 3:
                 printf("Enter data to delete: ");
                 scanf("%d", &key);
                 deleteNode(&head, key);
                 break;
-            case 3:
-                printf("Circular Linked List:\n");
+            case 4:
+                printf("Doubly Linked List:\n");
                 display(head);
                 break;
-            case 4:
+            case 5:
                 exit(0);
             default:
                 printf("Invalid choice. Please try again.\n");
