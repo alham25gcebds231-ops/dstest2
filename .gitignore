@@ -1,3 +1,5 @@
-*
-!DS programs/**
-!.gitignore
+# Ignore everything inside DS programs by default
+DS programs/*
+
+# BUT allow all .c source files inside DS programs
+!DS programs/*.c
