@@ -2,25 +2,38 @@
 int binarySearch(int arr[], int size, int target) {
     int low = 0;
     int high = size - 1;
-    while (low <= high) {
+
+    if (low > high) {
+        return -1;
+    }
+    do {
         int mid = low + (high - low) / 2;
+
         if (arr[mid] == target) {
             return mid;
         }
         if (arr[mid] < target) {
-            low = mid + 1; 
+            low = mid + 1;
         } else {
-            high = mid - 1; 
+            high = mid - 1;
         }
-    }
-    return -1; 
+    } while (low <= high);
+
+    return -1;
 }
 int main() {
-    int arr[] = {10, 20, 30, 40, 50, 60, 70};
-    int size = sizeof(arr) / sizeof(arr[0]);
+    int size;
+    printf("Enter number of elements: ");
+    scanf("%d", &size);
+    int arr[size];
+    printf("Enter %d sorted elements:\n", size);
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &arr[i]);
+    }
     int target;
     printf("Enter element to search for: ");
     scanf("%d", &target);
+
     int result = binarySearch(arr, size, target);
 
     if (result != -1) {
